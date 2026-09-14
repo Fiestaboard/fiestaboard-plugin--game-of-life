@@ -2,7 +2,7 @@
   "id": "game_of_life",
   "name": "Game of Life",
   "version": "1.0.0",
-  "description": "Conway's Game of Life on your board \u2014 one generation per refresh, auto-reseeds when the colony dies or settles",
+  "description": "Conway's Game of Life on your board — one generation per refresh, auto-reseeds when the colony dies or settles",
   "author": "FiestaBoard Team",
   "repository": "https://github.com/Fiestaboard/fiestaboard-plugin--game-of-life",
   "documentation": "README.md",
@@ -183,6 +183,14 @@
         "{70}{70}{70}{66}{70}{70}{70}{70}{70}{70}{66}{66}{66}{70}{70}",
         "{70}{66}{66}{66}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}"
       ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "docs/board-display.png",
+      "alt": "Game of Life displayed on a Vestaboard",
+      "caption": "Conway's Game of Life on your board — one generation per refresh, auto-reseeds when the colony dies or settles",
+      "primary": true
     }
   ],
   "demo": {

@@ -5,6 +5,8 @@ colony one generation: live cells are a colored tile, dead cells are black.
 When the colony dies out, settles into a still life or a period-2 oscillator,
 or hits the generation cap, the board reseeds itself so it never sits frozen.
 
+![Game of Life Display](./docs/board-display.png)
+
 No API, no key — the simulation runs entirely on your FiestaBoard.
 
 **→ [Setup Guide](./docs/SETUP.md)** — Configuration instructions
