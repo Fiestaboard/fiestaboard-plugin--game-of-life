@@ -1,0 +1,249 @@
+{
+  "id": "game_of_life",
+  "name": "Game of Life",
+  "version": "1.0.0",
+  "description": "Conway's Game of Life on your board \u2014 one generation per refresh, auto-reseeds when the colony dies or settles",
+  "author": "FiestaBoard Team",
+  "repository": "https://github.com/Fiestaboard/fiestaboard-plugin--game-of-life",
+  "documentation": "README.md",
+  "icon": "grid-3x3",
+  "category": "art",
+  "min_refresh_seconds": 10,
+  "settings_schema": {
+    "type": "object",
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "title": "Enable Game of Life",
+        "default": false
+      },
+      "cell_color": {
+        "type": "string",
+        "title": "Cell Color",
+        "description": "Tile color for live cells. 'rainbow' colors each cell by age: newborn white, then red, orange, yellow, green, blue, violet as it survives.",
+        "enum": [
+          "red",
+          "orange",
+          "yellow",
+          "green",
+          "blue",
+          "violet",
+          "white",
+          "rainbow"
+        ],
+        "default": "green"
+      },
+      "wrap_edges": {
+        "type": "boolean",
+        "title": "Wrap Edges",
+        "description": "Treat the board as a torus so gliders leaving one edge re-enter on the opposite side.",
+        "default": true
+      },
+      "seed_pattern": {
+        "type": "string",
+        "title": "Seed Pattern",
+        "description": "Starting pattern. 'random' fills the board using Initial Density; the others place a classic pattern (patterns are centered, gliders start near the top-left).",
+        "enum": [
+          "random",
+          "glider",
+          "r_pentomino",
+          "lwss",
+          "gliders"
+        ],
+        "default": "random"
+      },
+      "initial_density": {
+        "type": "number",
+        "title": "Initial Density",
+        "description": "Fraction of cells alive in a random seed (0.1-0.6). Only used when Seed Pattern is 'random'.",
+        "minimum": 0.1,
+        "maximum": 0.6,
+        "default": 0.3
+      },
+      "reseed_after_stable": {
+        "type": "integer",
+        "title": "Reseed After Stable",
+        "description": "Reseed once the grid has been unchanged (or oscillating with period 2) for this many generations. The board also reseeds immediately if every cell dies.",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 3
+      },
+      "max_generations": {
+        "type": "integer",
+        "title": "Max Generations",
+        "description": "Reseed after this many generations regardless of activity. 0 = unlimited.",
+        "minimum": 0,
+        "maximum": 10000,
+        "default": 200
+      },
+      "refresh_seconds": {
+        "type": "integer",
+        "title": "Refresh Interval (seconds)",
+        "description": "How often to advance one generation. Every generation flips tiles, so shorter intervals mean more board noise.",
+        "minimum": 10,
+        "maximum": 3600,
+        "default": 60
+      }
+    }
+  },
+  "env_vars": [
+    {
+      "name": "GAME_OF_LIFE_ENABLED",
+      "required": false,
+      "description": "Enable the Game of Life plugin",
+      "default": "false"
+    }
+  ],
+  "variables": {
+    "groups": {
+      "display": {
+        "label": "Display"
+      },
+      "status": {
+        "label": "Status"
+      }
+    },
+    "simple": {
+      "game_of_life": {
+        "description": "Full board frame with one color marker per tile, rows separated by newlines",
+        "type": "string",
+        "max_length": 400,
+        "group": "display",
+        "example": "(life pattern)"
+      },
+      "game_of_life_array": {
+        "description": "2-D list of board character codes (rows x cols), one per tile",
+        "type": "array",
+        "max_length": 400,
+        "group": "display",
+        "example": "[[70, 66, 70, ...], ...]"
+      },
+      "generation": {
+        "description": "Generations since the last seed",
+        "type": "number",
+        "max_length": 5,
+        "group": "status",
+        "example": "42"
+      },
+      "population": {
+        "description": "Number of live cells",
+        "type": "number",
+        "max_length": 3,
+        "group": "status",
+        "example": "17"
+      },
+      "board_rows": {
+        "description": "Rows in the simulated grid",
+        "type": "number",
+        "max_length": 2,
+        "group": "status",
+        "example": "6"
+      },
+      "board_cols": {
+        "description": "Columns in the simulated grid",
+        "type": "number",
+        "max_length": 3,
+        "group": "status",
+        "example": "22"
+      },
+      "is_stable": {
+        "description": "True when the grid has stopped changing (still life or period-2 oscillator)",
+        "type": "boolean",
+        "max_length": 5,
+        "group": "status",
+        "example": "false"
+      },
+      "seed_pattern": {
+        "description": "The configured seed pattern",
+        "type": "string",
+        "max_length": 11,
+        "group": "status",
+        "example": "random"
+      }
+    }
+  },
+  "fiestaboard_version": ">=2.10.0",
+  "teaser": "{66}{66}{66} LIFE",
+  "previews": [
+    {
+      "device_type": "flagship",
+      "rows": [
+        "{70}{70}{66}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{70}{66}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{66}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{66}{66}{66}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{66}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{66}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}"
+      ]
+    },
+    {
+      "device_type": "note",
+      "rows": [
+        "{70}{70}{66}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{70}{66}{70}{70}{70}{70}{70}{70}{66}{66}{66}{70}{70}",
+        "{70}{66}{66}{66}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}"
+      ]
+    }
+  ],
+  "demo": {
+    "flagship": {
+      "name": "Game of Life Demo",
+      "template": [
+        "{{game_of_life.game_of_life}}",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "line_metadata": [
+        {
+          "alignment": "left",
+          "wrap": true
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        }
+      ]
+    },
+    "note": {
+      "name": "Game of Life (Note)",
+      "template": [
+        "{{game_of_life.game_of_life}}",
+        "",
+        ""
+      ],
+      "line_metadata": [
+        {
+          "alignment": "left",
+          "wrap": true
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        }
+      ]
+    }
+  }
+}
