@@ -24,8 +24,18 @@ Each `fetch_data` call:
    oscillating with period 2 for **Reseed After Stable** generations, or if
    **Max Generations** has been reached.
 
-The grid is sized from the board it is rendering on (`self.board`), so a
-Flagship runs 6x22 and a Note runs 3x15. Changing boards reseeds.
+## Boards
+
+The grid is the board. Every dimension is read from the board being rendered
+on (`self.board`), so a Flagship runs 6x22, a Note 3x15, and a note array
+anything from 3x15 up to 24x120 — which is also what a FiestaPanel is (a
+virtual note array sized to a TV: 12x30 for a 65", 18x45 for an 85").
+
+**Each board runs its own colony.** One plugin instance serves every board you
+own, so the simulation is kept per board geometry: adding a Note does not
+disturb the Flagship's run, and a boardless read of
+`GET /plugins/game_of_life/data` is its own colony rather than a poll that
+advances a real board behind its back.
 
 ## Template Variables
 
@@ -66,16 +76,28 @@ of the lines empty:
 
 ### Seed Patterns
 
-| Pattern       | Size  | Behaviour                                                        |
-| ------------- | ----- | ---------------------------------------------------------------- |
-| `random`      | —     | Random fill at `initial_density`; usually the liveliest option    |
-| `glider`      | 3x3   | A single glider walking diagonally across the board               |
-| `r_pentomino` | 3x3   | Classic methuselah — chaotic for a long run                       |
-| `lwss`        | 4x5   | Lightweight spaceship travelling sideways                         |
-| `gliders`     | 3x3 each | A row of gliders, one every 7 columns (3 on Flagship, 2 on Note) |
+| Pattern             | Size  | Behaviour                                                      |
+| ------------------- | ----- | -------------------------------------------------------------- |
+| `random`            | —     | Random fill at `initial_density`; usually the liveliest option  |
+| `glider`            | 3x3   | Gliders walking diagonally across the board                     |
+| `r_pentomino`       | 3x3   | Classic methuselah — chaotic for a long run                     |
+| `lwss`              | 4x5   | Lightweight spaceships travelling sideways                      |
+| `pulsar`            | 13x13 | Period-3 oscillator; needs a board at least 13x13               |
+| `gosper_glider_gun` | 9x36  | Emits a glider every 30 generations; needs at least 9x36        |
+| `gliders`           | 3x3   | Legacy alias for `glider`, kept so old configs keep working     |
 
-Larger classics such as the pulsar (13x13) and the Gosper glider gun (36x9)
-do not fit on either board, so they are not offered.
+Every pattern **tiles to fill the board**: as many copies as fit with a
+two-cell gap between them, on both axes, so the seed is as dense on a Note as
+on a 24x120 array. The number of copies is the board's decision, never a
+constant — a single fixed shape would put 5 live cells in the 2,880 of a max
+array and read as a blank board.
+
+A pattern too large for the board in hand is **substituted, never clipped** — a
+clipped shape is not the shape (an LWSS missing its bottom row is a 5-cell
+fragment that does not travel). So `gosper_glider_gun` falls back to `pulsar`,
+then `lwss`, then `glider`, until one fits. That means the big classics are
+offered to every board and gated when they are seeded: a 24x120 array has room
+for a pulsar and a Gosper gun, and a Note does not.
 
 ### Rainbow Mode
 

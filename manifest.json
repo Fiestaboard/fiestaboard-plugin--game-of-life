@@ -1,7 +1,7 @@
 {
   "id": "game_of_life",
   "name": "Game of Life",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Conway's Game of Life on your board — one generation per refresh, auto-reseeds when the colony dies or settles",
   "author": "FiestaBoard Team",
   "repository": "https://github.com/Fiestaboard/fiestaboard-plugin--game-of-life",
@@ -42,12 +42,14 @@
       "seed_pattern": {
         "type": "string",
         "title": "Seed Pattern",
-        "description": "Starting pattern. 'random' fills the board using Initial Density; the others place a classic pattern (patterns are centered, gliders start near the top-left).",
+        "description": "Starting pattern. 'random' fills the board using Initial Density; the others tile a classic pattern across the board, as many copies as the board has room for. Patterns too large for the board in hand (a pulsar or Gosper gun on a Note) are substituted with the nearest smaller relative rather than clipped. 'gliders' is a legacy alias for 'glider'.",
         "enum": [
           "random",
           "glider",
           "r_pentomino",
           "lwss",
+          "pulsar",
+          "gosper_glider_gun",
           "gliders"
         ],
         "default": "random"
@@ -105,16 +107,16 @@
     },
     "simple": {
       "game_of_life": {
-        "description": "Full board frame with one color marker per tile, rows separated by newlines",
+        "description": "Full board frame with one color marker per tile, rows separated by newlines; sized to the board being rendered (22x6 on a Flagship, 15x3 on a Note, up to 120x24 on a note array)",
         "type": "string",
-        "max_length": 400,
+        "max_length": 2903,
         "group": "display",
         "example": "(life pattern)"
       },
       "game_of_life_array": {
-        "description": "2-D list of board character codes (rows x cols), one per tile",
+        "description": "2-D list of board character codes, one row per board row and one code per tile; max_length is the row count on the tallest board (24)",
         "type": "array",
-        "max_length": 400,
+        "max_length": 24,
         "group": "display",
         "example": "[[70, 66, 70, ...], ...]"
       },
@@ -128,7 +130,7 @@
       "population": {
         "description": "Number of live cells",
         "type": "number",
-        "max_length": 3,
+        "max_length": 4,
         "group": "status",
         "example": "17"
       },
@@ -156,7 +158,7 @@
       "seed_pattern": {
         "description": "The configured seed pattern",
         "type": "string",
-        "max_length": 11,
+        "max_length": 17,
         "group": "status",
         "example": "random"
       }
@@ -182,6 +184,37 @@
         "{70}{70}{66}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}",
         "{70}{70}{70}{66}{70}{70}{70}{70}{70}{70}{66}{66}{66}{70}{70}",
         "{70}{66}{66}{66}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}"
+      ]
+    },
+    {
+      "label": "Note Array (2 wide)",
+      "device_type": "note_array",
+      "notes_wide": 2,
+      "notes_tall": 1,
+      "rows": [
+        "{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}",
+        "{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}",
+        "{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}"
+      ]
+    },
+    {
+      "label": "Panel (2x4)",
+      "device_type": "note_array",
+      "notes_wide": 2,
+      "notes_tall": 4,
+      "rows": [
+        "{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}",
+        "{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}",
+        "{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}",
+        "{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}",
+        "{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}{70}{70}{70}{66}{70}",
+        "{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}{70}{66}{66}{66}{70}",
+        "{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}",
+        "{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}{70}"
       ]
     }
   ],
